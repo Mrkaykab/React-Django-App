@@ -2,9 +2,9 @@ name: Deploy to EC2 Instances
 
 on:
   push:
-    branches: [ main, Development ]
+    branches: [ master, Development ]
   pull_request:
-    branches: [ main, Development ]
+    branches: [ master, Development ]
 
 jobs:
   deploy:
