@@ -24,7 +24,7 @@ jobs:
 
     - name: Run backend tests
       run: |
-        cd backend/Computex
+        cd backend
         python manage.py test
 
     - name: Set up Node.js
