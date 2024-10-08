@@ -68,11 +68,12 @@ jobs:
         BACKEND_HOST: ${{ secrets.BACKEND_HOST }}
       run: |
         echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-        scp -i private_key -o StrictHostKeyChecking=no -r ComputexFrontend/dist/* ubuntu@$FRONTEND_HOST:/home/ubuntu/frontend
+        ssh -i private_key -o StrictHostKeyChecking=no ubuntu@$FRONTEND_HOST 'mkdir -p /home/ubuntu/react-app2/ComputexFrontend'
+        scp -i private_key -o StrictHostKeyChecking=no -r ComputexFrontend/dist/* ubuntu@$FRONTEND_HOST:/home/ubuntu/react-app2/ComputexFrontend
         scp -i private_key -o StrictHostKeyChecking=no -r Computex/* ubuntu@$BACKEND_HOST:/home/ubuntu/backend
         scp -i private_key -o StrictHostKeyChecking=no requirements.txt ubuntu@$BACKEND_HOST:/home/ubuntu/backend/
         ssh -i private_key -o StrictHostKeyChecking=no ubuntu@$BACKEND_HOST '
-          cd /home/ubuntu/backend &&
+          cd /home/ubuntu/backend/Computex &&
           source venv/bin/activate &&
           pip install -r requirements.txt &&
           python manage.py migrate &&
