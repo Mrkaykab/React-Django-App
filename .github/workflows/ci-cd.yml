@@ -38,6 +38,10 @@ jobs:
     - name: Run backend tests
       env:
         DJANGO_SETTINGS_MODULE: Computex.test_settings
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: github_actions
+        POSTGRES_HOST: 127.0.0.1
       run: |
         cd Computex
         python manage.py test
