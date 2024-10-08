@@ -9,6 +9,18 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_actions
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
     - uses: actions/checkout@v2
 
@@ -24,6 +36,8 @@ jobs:
         pip install -r Computex/requirements.txt
 
     - name: Run backend tests
+      env:
+        DJANGO_SETTINGS_MODULE: Computex.test_settings
       run: |
         cd Computex
         python manage.py test
@@ -48,7 +62,6 @@ jobs:
         PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         FRONTEND_HOST: ${{ secrets.FRONTEND_HOST }}
         BACKEND_HOST: ${{ secrets.BACKEND_HOST }}
-        
       run: |
         echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
         scp -i private_key -o StrictHostKeyChecking=no -r ComputexFrontend/dist/* ubuntu@$FRONTEND_HOST:/home/ubuntu/frontend
