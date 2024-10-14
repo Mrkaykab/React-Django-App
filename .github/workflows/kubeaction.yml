@@ -9,7 +9,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v2
     
@@ -18,9 +18,16 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1  # Replace with your AWS region
+        aws-region: us-east-1  # Update if the cluster is in a different region
 
-    - name: Configure kubectl
+    - name: Check if EKS cluster exists (debugging step)
+      run: |
+        echo "Listing available EKS clusters in the region..."
+        aws eks list-clusters --region us-east-1
+        echo "Checking if the cluster exists..."
+        aws eks describe-cluster --name computex-cluster --region us-east-1
+
+    - name: Configure kubectl with EKS
       run: |
         aws eks --region us-east-1 update-kubeconfig --name computex-cluster
         kubectl get nodes
