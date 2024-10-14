@@ -18,7 +18,12 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1  # Replace with your AWS region
+        aws-region: us-east-1
+
+    - name: Install eksctl
+      run: |
+        curl -s --location "https://github.com/weaveworks/eksctl/releases/download/v0.154.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
+        sudo mv /tmp/eksctl /usr/local/bin
 
     - name: Check if EKS cluster exists
       id: check-cluster
