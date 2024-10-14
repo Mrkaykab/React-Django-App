@@ -30,12 +30,17 @@ jobs:
         aws eks --region us-east-1 update-kubeconfig --name computex-cluster
         kubectl get nodes
 
+    - name: Pull Docker images from Docker Hub
+      run: |
+        docker pull mrkaykab/computex-frontend:latest
+        docker pull mrkaykab/computex-backend:latest
+
     - name: Apply Kubernetes deployments (frontend and backend)
       run: |
         kubectl apply -f frontend-deployment.yaml
         kubectl apply -f backend-deployment.yaml
 
-    - name: Deploy to Kubernetes
+    - name: Deploy to Kubernetes (update images)
       run: |
         kubectl set image deployment/computex-frontend computex-frontend=mrkaykab/computex-frontend:latest
         kubectl set image deployment/computex-backend computex-backend=mrkaykab/computex-backend:latest
