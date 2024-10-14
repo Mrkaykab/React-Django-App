@@ -18,16 +18,28 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1  # Update if the cluster is in a different region
+        aws-region: us-east-1  # Replace with your AWS region
 
-    - name: Check if EKS cluster exists (debugging step)
+    - name: Check if EKS cluster exists
+      id: check-cluster
       run: |
-        echo "Listing available EKS clusters in the region..."
-        aws eks list-clusters --region us-east-1
-        echo "Checking if the cluster exists..."
-        aws eks describe-cluster --name computex-cluster --region us-east-1
+        CLUSTER_EXISTS=$(aws eks describe-cluster --name computex-cluster --region us-east-1 --query 'cluster.name' --output text || echo "ClusterNotFound")
+        echo "Cluster exists: $CLUSTER_EXISTS"
+        if [ "$CLUSTER_EXISTS" = "ClusterNotFound" ]; then
+          echo "Creating EKS cluster..."
+          eksctl create cluster \
+            --name computex-cluster \
+            --region us-east-1 \
+            --nodes 3 \
+            --node-type t3.medium \
+            --nodes-min 1 \
+            --nodes-max 4 \
+            --managed
+        else
+          echo "Cluster already exists."
+        fi
 
-    - name: Configure kubectl with EKS
+    - name: Configure kubectl
       run: |
         aws eks --region us-east-1 update-kubeconfig --name computex-cluster
         kubectl get nodes
