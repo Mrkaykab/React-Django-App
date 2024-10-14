@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: computex-frontend
+  labels:
+    app: computex-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: computex-frontend
+  template:
+    metadata:
+      labels:
+        app: computex-frontend
+    spec:
+      containers:
+      - name: computex-frontend
+        image: mrkaykab/computex-frontend:latest  # Docker image from Docker Hub
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: computex-frontend-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+  selector:
+    app: computex-frontend

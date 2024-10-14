@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: computex-backend
+  labels:
+    app: computex-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: computex-backend
+  template:
+    metadata:
+      labels:
+        app: computex-backend
+    spec:
+      containers:
+      - name: computex-backend
+        image: mrkaykab/computex-backend:latest  # Docker image from Docker Hub
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: computex-backend-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+  selector:
+    app: computex-backend
