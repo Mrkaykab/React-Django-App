@@ -25,29 +25,15 @@ jobs:
         curl -s --location "https://github.com/weaveworks/eksctl/releases/download/v0.154.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
         sudo mv /tmp/eksctl /usr/local/bin
 
-    - name: Check if EKS cluster exists
-      id: check-cluster
-      run: |
-        CLUSTER_EXISTS=$(aws eks describe-cluster --name computex-cluster --region us-east-1 --query 'cluster.name' --output text || echo "ClusterNotFound")
-        echo "Cluster exists: $CLUSTER_EXISTS"
-        if [ "$CLUSTER_EXISTS" = "ClusterNotFound" ]; then
-          echo "Creating EKS cluster..."
-          eksctl create cluster \
-            --name computex-cluster \
-            --region us-east-1 \
-            --nodes 3 \
-            --node-type t3.medium \
-            --nodes-min 1 \
-            --nodes-max 4 \
-            --managed
-        else
-          echo "Cluster already exists."
-        fi
-
     - name: Configure kubectl
       run: |
         aws eks --region us-east-1 update-kubeconfig --name computex-cluster
         kubectl get nodes
+
+    - name: Apply Kubernetes deployments (frontend and backend)
+      run: |
+        kubectl apply -f frontend-deployment.yaml
+        kubectl apply -f backend-deployment.yaml
 
     - name: Deploy to Kubernetes
       run: |
